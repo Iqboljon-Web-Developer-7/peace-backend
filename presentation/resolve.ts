@@ -2,12 +2,12 @@ import {defineLocations, type PresentationPluginOptions} from 'sanity/presentati
 
 export const resolve: PresentationPluginOptions['resolve'] = {
   locations: {
-    post: defineLocations({
+    announcement: defineLocations({
       select: {title: 'title', slug: 'slug.current'},
       resolve: (doc) => ({
         locations: [
-          {title: doc?.title || 'Untitled', href: `/posts/${doc?.slug}`},
-          {title: 'Posts index', href: `/`},
+          {title: doc?.title || 'Untitled', href: `/announcements/${doc?.slug}`},
+          {title: 'Announcements index', href: `/announcements`},
         ],
       }),
     }),

@@ -19,9 +19,50 @@ export const announcement = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'author',
+      name: 'description',
+      type: 'text',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'attendance', // people who attended the announcement
+      type: 'array',
+      of: [defineArrayMember({type: 'text'})],
+    }),
+    defineField({
+      name: 'memories', // memories of the announcement
+      type: 'array',
+      of: [defineArrayMember({type: 'text'})],
+    }),
+    defineField({
+      name: 'comments', // comments of the announcement
+      type: 'array',
+      of: [{name: 'comment', type: 'text'}],
+    }),
+    defineField({
+      name: 'busses',
+      type: 'array',
+      of: [{name: 'bus', type: 'number'}],
+    }),
+    defineField({
+      name: 'google-map', // google map of the announcement
+      type: 'text',
+    }),
+    defineField({
+      name: 'apple-map', // location of the announcement
+      type: 'text',
+    }),
+    defineField({
+      name: 'yandex-map', // yandex map of the announcement
+      type: 'text',
+    }),
+    defineField({
+      name: 'entrance-video',
+      type: 'file',
+    }),
+    defineField({
+      name: 'user',
       type: 'reference',
-      to: [{type: 'author'}],
+      to: [{type: 'user'}],
     }),
     defineField({
       name: 'mainImage',
