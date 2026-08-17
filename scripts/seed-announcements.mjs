@@ -100,13 +100,15 @@ const blocks = (paragraphs) =>
 
 // ---------------------------------------------------------------- seed data
 
+// `organiser` becomes a member of the organisation, which is what makes their
+// comments render the "Organiser" badge.
 const ORGS = [
-  {slug: 'blue-line-trust', name: 'Blue Line Trust'},
-  {slug: 'northgate-house', name: 'Northgate House'},
-  {slug: 'st-annes-kitchen', name: "St. Anne's Kitchen"},
-  {slug: 'city-parks', name: 'City Parks'},
-  {slug: 'fairfield-primary', name: 'Fairfield Primary'},
-  {slug: 'regional-relief', name: 'Regional Relief'},
+  {slug: 'blue-line-trust', name: 'Blue Line Trust', organiser: 'dilnoza-k'},
+  {slug: 'northgate-house', name: 'Northgate House', organiser: 'sevara-r'},
+  {slug: 'st-annes-kitchen', name: "St. Anne's Kitchen", organiser: 'father-timur'},
+  {slug: 'city-parks', name: 'City Parks', organiser: 'bekzod-r'},
+  {slug: 'fairfield-primary', name: 'Fairfield Primary', organiser: 'zulfiya-k'},
+  {slug: 'regional-relief', name: 'Regional Relief', organiser: 'shahzod-h'},
 ]
 
 const DEMO_USERS = [
@@ -363,12 +365,6 @@ async function upsertBySlug(type, slug, doc) {
 }
 
 async function seed() {
-  console.log('Organisations…')
-  const orgIds = {}
-  for (const o of ORGS) {
-    orgIds[o.slug] = await upsertBySlug('organisation', o.slug, {name: o.name, verified: true})
-  }
-
   console.log('Demo commenters…')
   const userIds = {}
   for (const u of DEMO_USERS) {
@@ -377,6 +373,16 @@ async function seed() {
     userIds[u.key] = existing
       ? existing
       : (await mutate([{create: {_type: 'user', auth0Id, name: u.name}}])).results[0].id
+  }
+
+  console.log('Organisations…')
+  const orgIds = {}
+  for (const o of ORGS) {
+    orgIds[o.slug] = await upsertBySlug('organisation', o.slug, {
+      name: o.name,
+      verified: true,
+      members: [{_type: 'reference', _key: o.organiser, _ref: userIds[o.organiser]}],
+    })
   }
 
   console.log('Images…')
