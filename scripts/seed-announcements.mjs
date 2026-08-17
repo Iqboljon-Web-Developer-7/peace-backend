@@ -343,7 +343,16 @@ async function undo() {
   })
   if (!ids.length) return console.log('Nothing to remove.')
   // Children first so strong references never block a delete.
-  const order = ['comment', 'memory', 'attendance', 'report', 'announcement', 'organisation', 'user']
+  const order = [
+    'comment',
+    'memory',
+    'attendance',
+    'report',
+    'follow',
+    'announcement',
+    'organisation',
+    'user',
+  ]
   const typed = await query('*[_id in $ids]{_id,_type}', {ids})
   typed.sort((a, b) => order.indexOf(a._type) - order.indexOf(b._type))
   await mutate(typed.map((d) => ({delete: {id: d._id}})))

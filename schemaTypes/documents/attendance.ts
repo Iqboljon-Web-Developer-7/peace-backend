@@ -41,6 +41,22 @@ export const attendance = defineType({
       initialValue: 'going',
       validation: (rule) => rule.required(),
     }),
+    defineField({
+      name: 'remind',
+      title: 'Remind me',
+      type: 'boolean',
+      initialValue: true,
+      description: 'STORED ONLY — no reminder is sent yet.',
+    }),
+    defineField({
+      name: 'minutesRecorded',
+      title: 'Minutes recorded',
+      type: 'number',
+      description:
+        'What was actually given, when it differs from the announcement’s planned ' +
+        'length. Falls back to `announcement.durationMinutes` in the hours total.',
+      validation: (rule) => rule.min(0).max(24 * 60),
+    }),
     defineField({name: 'createdAt', type: 'datetime'}),
   ],
   preview: {
