@@ -353,10 +353,36 @@ async function undo() {
     'organisation',
     'user',
   ]
+  // Collect the images these documents point at, before the references vanish.
+  const assetRows = await query(
+    `*[_id in $ids]{
+      "refs": [
+        mainImage.asset._ref, entryImage.asset._ref, entryVideo.asset._ref,
+        image.asset._ref, avatar.asset._ref, logo.asset._ref
+      ]
+    }.refs`,
+    {ids},
+  )
+  const assetIds = [...new Set(assetRows.flat().filter(Boolean))]
+
   const typed = await query('*[_id in $ids]{_id,_type}', {ids})
   typed.sort((a, b) => order.indexOf(a._type) - order.indexOf(b._type))
   await mutate(typed.map((d) => ({delete: {id: d._id}})))
   console.log(`Removed ${typed.length} documents.`)
+
+  /*
+   * Deleting a document only drops the *reference* to its image. The file stays
+   * on the public CDN, so without this every --undo leaves the whole seed's
+   * imagery downloadable by anyone holding a URL.
+   *
+   * Only assets nothing else points at are removed — a shared image, or one
+   * someone attached by hand in the Studio, is left alone.
+   */
+  const orphans = assetIds.length
+    ? await query(`*[_id in $assetIds && count(*[references(^._id)]) == 0]._id`, {assetIds})
+    : []
+  if (orphans.length) await mutate(orphans.map((id) => ({delete: {id}})))
+  console.log(`Removed ${orphans.length} now-unused image assets.`)
 }
 
 // ---------------------------------------------------------------- seed
