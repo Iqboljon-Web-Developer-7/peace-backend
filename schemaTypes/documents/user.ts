@@ -123,13 +123,23 @@ export const user = defineType({
       title: 'Notification preferences',
       type: 'object',
       group: 'preferences',
-      description: 'STORED ONLY — nothing sends notifications yet.',
+      description:
+        'Absent means ON for the first four — they are targeted, and most ' +
+        'volunteers never open this. `everything` is the exception: absent ' +
+        'means OFF, because it is a broadcast and has to be asked for. Senders ' +
+        'must read these as coalesce(x, true) and coalesce(everything, false).',
       options: {collapsible: true, collapsed: false},
       fields: [
         defineField({name: 'matches', title: 'Shifts that match me', type: 'boolean'}),
         defineField({name: 'reminders', title: 'Shift reminders', type: 'boolean'}),
         defineField({name: 'cleanings', title: 'General cleaning days', type: 'boolean'}),
         defineField({name: 'seasonal', title: 'Ramadan and Eid rotas', type: 'boolean'}),
+        defineField({
+          name: 'everything',
+          title: 'Every new announcement',
+          type: 'boolean',
+          description: 'The one switch here where absent means OFF.',
+        }),
       ],
     }),
     defineField({

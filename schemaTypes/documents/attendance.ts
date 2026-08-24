@@ -46,7 +46,11 @@ export const attendance = defineType({
       title: 'Remind me',
       type: 'boolean',
       initialValue: true,
-      description: 'STORED ONLY — no reminder is sent yet.',
+      description:
+        'Drives the two reminder stages: the evening before, and about two ' +
+        'hours ahead. `initialValue` only fires in the Studio — the sign-up ' +
+        'action writes it explicitly, and senders still read it as ' +
+        'coalesce(remind, true) so older rows are not silently skipped.',
     }),
     defineField({
       name: 'minutesRecorded',
