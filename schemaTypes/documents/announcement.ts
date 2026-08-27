@@ -133,6 +133,17 @@ export const announcement = defineType({
       group: 'logistics',
     }),
     defineField({
+      name: 'durationMinutes',
+      title: 'Duration (minutes)',
+      type: 'number',
+      group: 'logistics',
+      description:
+        'Machine-readable length, used for a volunteer’s hours total — the ' +
+        'counterpart to `durationLabel`, exactly as `startsAt` is to `whenLabel`. ' +
+        'Leave empty for rolling or standby shifts; those contribute no hours.',
+      validation: (rule) => rule.min(0).max(24 * 60),
+    }),
+    defineField({
       name: 'distanceLabel',
       title: 'Distance (label)',
       type: 'string',
