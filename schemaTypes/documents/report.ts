@@ -20,7 +20,6 @@ export const report = defineType({
           {title: 'Announcement', value: 'announcement'},
           {title: 'Comment', value: 'comment'},
           {title: 'Memory', value: 'memory'},
-          {title: 'Attendance', value: 'attendance'},
         ],
       },
       validation: (rule) => rule.required(),

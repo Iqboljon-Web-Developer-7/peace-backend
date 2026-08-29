@@ -1,8 +1,11 @@
 /**
  * Makes the five notification channels demonstrable.
  *
- *   node scripts/seed-notifications.mjs          # set up
- *   node scripts/seed-notifications.mjs --undo   # remove what it created
+ *   node scripts/seed-notifications.mjs --dataset=development
+ *   node scripts/seed-notifications.mjs --dataset=development --undo
+ *
+ * Defaults to the `development` dataset; `production` additionally needs
+ * `--yes`. Reads SANITY_API_WRITE_TOKEN from the environment.
  *
  * Without this nothing fires: no user has `notify` set, one has interests, one
  * has two of twenty-eight availability slots, one announcement of eight has any
@@ -13,26 +16,14 @@
  * the first send and gets pruned, which looks like a bug in the pruning code
  * rather than a bad fixture — subscriptions have to come from a real browser.
  */
-import {readFileSync} from 'node:fs'
-import {dirname, join} from 'node:path'
-import {fileURLToPath} from 'node:url'
+import {resolveDataset, includeReal, writeToken} from './guard.mjs'
 
-const HERE = dirname(fileURLToPath(import.meta.url))
 const PROJECT = 'ysi42gxq'
-const DATASET = 'production'
+const DATASET = resolveDataset()
 const API = `https://${PROJECT}.api.sanity.io/v2026-08-07`
 
-const env = Object.fromEntries(
-  readFileSync(join(HERE, '../../peace-front/.env.local'), 'utf8')
-    .split('\n')
-    .filter((l) => l.includes('=') && !l.trim().startsWith('#'))
-    .map((l) => {
-      const i = l.indexOf('=')
-      return [l.slice(0, i).trim(), l.slice(i + 1).trim()]
-    }),
-)
-const TOKEN = env.SANITY_API_WRITE_TOKEN
-if (!TOKEN) throw new Error('Missing SANITY_API_WRITE_TOKEN')
+const TOKEN = writeToken()
+const INCLUDE_REAL = includeReal()
 const auth = {Authorization: `Bearer ${TOKEN}`}
 
 const query = async (groq, params = {}) => {
@@ -117,15 +108,37 @@ async function seed() {
     throw new Error(`Run seed-profile.mjs first — missing categories: ${missing.join(', ')}`)
   }
 
-  // Real people only. The `seed|` fixtures have no devices and never sign in.
-  const realUsers = await query(
-    `*[_type == "user" && !string::startsWith(auth0Id, "seed|") && coalesce(status,"active") != "closed"] | order(_createdAt asc){_id, name}`,
-  )
+  /*
+   * Fixtures first, and real accounts only when asked for.
+   *
+   * This used to put real people at the *front* of the list, because they are
+   * the only ones with real devices — and then `set` their interests and
+   * availability, flip `notify.everything` on for four of them and
+   * `notify.matches` off for one. That is someone's stated consent, overwritten
+   * by a demo script, against production, with an `--undo` that refuses to put
+   * it back. Broadcast opt-in especially: the schema says "absent means OFF,
+   * because it is a broadcast and has to be asked for".
+   *
+   * So: demo fixtures by default. `--include-real` opts in, and even then real
+   * accounts only ever get preferences they do not already have (§ applyPrefs).
+   */
   const demoUsers = await query(
     `*[_type == "user" && string::startsWith(auth0Id, "seed|")] | order(_createdAt asc)[0...8]{_id, name}`,
   )
-  const people = [...realUsers, ...demoUsers]
-  if (people.length < 3) throw new Error('Not enough users to seed against')
+  const realUsers = INCLUDE_REAL
+    ? await query(
+        `*[_type == "user" && !string::startsWith(auth0Id, "seed|") && coalesce(status,"active") != "closed"] | order(_createdAt asc){_id, name, "hasPrefs": defined(interests) || defined(availability) || defined(notify)}`,
+      )
+    : []
+  const people = [...demoUsers, ...realUsers]
+  if (people.length < 3) {
+    throw new Error(
+      'Not enough demo users to seed against — run seed-announcements.mjs first.',
+    )
+  }
+  if (INCLUDE_REAL && realUsers.length) {
+    console.log(`including:       ${realUsers.length} real account(s) (--include-real)`)
+  }
 
   const orgs = await query(`*[_type == "organisation"] | order(name asc){_id, name}`)
   const org = orgs[0]
@@ -213,22 +226,27 @@ async function seed() {
     // The exact slots, plus a couple of neighbours so the grid does not look
     // machine-generated.
     const availability = [...new Set([...wantedSlots, 'sat-morn', 'sun-mid'])]
-    prefMutations.push({patch: {id: u._id, set: {interests, availability}}})
+    // `setIfMissing` for anyone who already chose: a fixture may be shaped
+    // freely, but a real person's answers are not ours to replace.
+    const op = u.hasPrefs ? 'setIfMissing' : 'set'
+    prefMutations.push({patch: {id: u._id, [op]: {interests, availability}}})
   })
   await mutate(prefMutations)
   console.log(`preferences:     ${prefMutations.length} users given interests + availability`)
 
   // 3. The broadcast opt-in on a few people, absent on the rest — that single
   //    dataset proves both the opt-in and the coalesce(x, false) default.
-  const broadcasters = people.slice(0, 4)
+  //    Fixtures only, always: `everything` is consent to be broadcast at, and
+  //    a seed script is not where that gets granted.
+  const broadcasters = demoUsers.slice(0, 4)
   await mutate(
     broadcasters.map((u) => ({patch: {id: u._id, set: {'notify.everything': true}}})),
   )
-  console.log(`broadcast opt-in: ${broadcasters.length} users (absent on the others)`)
+  console.log(`broadcast opt-in: ${broadcasters.length} fixtures (never real accounts)`)
 
   // 4. One person who matches perfectly but has the switch off, so a run can be
-  //    seen to honour it.
-  const silenced = people[Math.min(2, people.length - 1)]
+  //    seen to honour it. A fixture, for the same reason.
+  const silenced = demoUsers[Math.min(2, demoUsers.length - 1)]
   await mutate([{patch: {id: silenced._id, set: {'notify.matches': false}}}])
   console.log(`silenced:        ${silenced.name ?? silenced._id} (notify.matches = false)`)
 

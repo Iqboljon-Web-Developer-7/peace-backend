@@ -2,8 +2,11 @@
  * Seeds the data the /profile page needs, and backfills the fields added
  * alongside it.
  *
- *   node scripts/seed-profile.mjs          # create / update
- *   node scripts/seed-profile.mjs --undo   # remove the categories it created
+ *   node scripts/seed-profile.mjs --dataset=development
+ *   node scripts/seed-profile.mjs --dataset=development --undo
+ *
+ * Defaults to the `development` dataset; `production` additionally needs
+ * `--yes`. Reads SANITY_API_WRITE_TOKEN from the environment.
  *
  * Idempotent: categories are upserted by slug, and every backfill only touches
  * documents where the field is still undefined.
@@ -13,27 +16,14 @@
  * `referralCode`, `status`) are deliberately NOT undone — they are migrations
  * of pre-existing documents, not things this script owns.
  */
-import {readFileSync} from 'node:fs'
 import {randomBytes} from 'node:crypto'
-import {dirname, join} from 'node:path'
-import {fileURLToPath} from 'node:url'
+import {resolveDataset, includeReal, writeToken} from './guard.mjs'
 
-const HERE = dirname(fileURLToPath(import.meta.url))
 const PROJECT = 'ysi42gxq'
-const DATASET = 'production'
+const DATASET = resolveDataset()
 const API = `https://${PROJECT}.api.sanity.io/v2026-08-07`
 
-const env = Object.fromEntries(
-  readFileSync(join(HERE, '../../peace-front/.env.local'), 'utf8')
-    .split('\n')
-    .filter((l) => l.includes('=') && !l.trim().startsWith('#'))
-    .map((l) => {
-      const i = l.indexOf('=')
-      return [l.slice(0, i).trim(), l.slice(i + 1).trim()]
-    }),
-)
-const TOKEN = env.SANITY_API_WRITE_TOKEN
-if (!TOKEN) throw new Error('Missing SANITY_API_WRITE_TOKEN')
+const TOKEN = writeToken()
 const auth = {Authorization: `Bearer ${TOKEN}`}
 
 const query = async (groq, params = {}) => {

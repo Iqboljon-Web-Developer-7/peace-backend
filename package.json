@@ -2,7 +2,6 @@
   "name": "peace",
   "private": true,
   "version": "1.0.0",
-  "main": "package.json",
   "license": "UNLICENSED",
   "scripts": {
     "build": "sanity build",
@@ -23,7 +22,9 @@
     "styled-components": "^6.1.18"
   },
   "devDependencies": {
+    "@sanity/blueprints": "^0.24.0",
     "@sanity/eslint-config-studio": "^6.0.0",
+    "@sanity/functions": "^1.7.1",
     "@types/node": "^26.1.2",
     "@types/react": "^19.2.14",
     "eslint": "^9.28",

@@ -555,10 +555,6 @@
             {
               "type": "string",
               "value": "memory"
-            },
-            {
-              "type": "string",
-              "value": "attendance"
             }
           ]
         },
