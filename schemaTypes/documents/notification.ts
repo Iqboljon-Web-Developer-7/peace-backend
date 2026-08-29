@@ -86,6 +86,16 @@ export const notification = defineType({
         'no device to deliver to, so a volunteer without push is not retried ' +
         'forever.',
     }),
+    defineField({
+      name: 'claimedAt',
+      title: 'Claimed at',
+      type: 'datetime',
+      readOnly: true,
+      description:
+        'Set by a delivery run before it sends, so a second run overlapping it ' +
+        'does not pick the same rows up and push them twice. Treated as expired ' +
+        'after a few minutes, so a run that dies mid-flight is retried.',
+    }),
     defineField({name: 'readAt', type: 'datetime'}),
   ],
   preview: {

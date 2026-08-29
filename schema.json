@@ -315,6 +315,13 @@
         },
         "optional": true
       },
+      "claimedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "readAt": {
         "type": "objectAttribute",
         "value": {
