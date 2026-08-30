@@ -124,10 +124,14 @@ export const user = defineType({
       type: 'object',
       group: 'preferences',
       description:
-        'Absent means ON for the first four — they are targeted, and most ' +
-        'volunteers never open this. `everything` is the exception: absent ' +
-        'means OFF, because it is a broadcast and has to be asked for. Senders ' +
-        'must read these as coalesce(x, true) and coalesce(everything, false).',
+        'Absent means ON for all five — most volunteers never open this page, ' +
+        'and a preference nobody has set should not silence them. Senders must ' +
+        'read every one as coalesce(x, true). `everything` used to be the ' +
+        'exception, defaulting OFF because a broadcast ought to be asked for; ' +
+        'it was also the only channel a brand-new account could match, since ' +
+        'the other four each need interests, a follow, a signup or a ' +
+        'season-tagged announcement first. An explicit false still wins, so ' +
+        'this is a default and not a lock.',
       options: {collapsible: true, collapsed: false},
       fields: [
         defineField({name: 'matches', title: 'Shifts that match me', type: 'boolean'}),
@@ -138,7 +142,9 @@ export const user = defineType({
           name: 'everything',
           title: 'Every new announcement',
           type: 'boolean',
-          description: 'The one switch here where absent means OFF.',
+          description:
+            'Every announcement, not only the ones that match this volunteer. ' +
+            'The only channel that needs nothing of them but a device.',
         }),
       ],
     }),
