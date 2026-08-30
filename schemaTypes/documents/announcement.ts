@@ -198,7 +198,21 @@ export const announcement = defineType({
       name: 'categories',
       type: 'array',
       group: 'meta',
+      description:
+        'Drives who gets notified. Without at least one, the only people who ' +
+        'hear about this are those who explicitly asked for every announcement.',
       of: [defineArrayMember({type: 'reference', to: [{type: 'category'}]})],
+      /*
+       * A warning, not an error: an uncategorised broadcast is a legitimate
+       * thing to publish, it just reaches far fewer people than the author
+       * probably expects. Three announcements went out uncategorised and only
+       * the broadcast channel could fire for them, which is invisible from the
+       * Studio — the targeted channels all need a category to match against.
+       */
+      validation: (Rule) =>
+        Rule.warning(
+          'No category, so this reaches only people who opted into every announcement. Add one to reach volunteers by interest.',
+        ).min(1),
     }),
     defineField({
       name: 'publishedAt',
