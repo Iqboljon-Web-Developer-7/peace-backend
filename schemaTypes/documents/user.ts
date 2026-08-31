@@ -184,10 +184,15 @@ export const user = defineType({
       initialValue: 'regular',
       description:
         'Set in the Studio only — the profile page never writes it, so nobody ' +
-        'can promote themselves. Nothing reads it yet: this grants no access ' +
-        'and hides nothing. Accounts created before this field have no value ' +
-        'at all, so any reader must treat absent as "regular", not as a gap ' +
-        'to fill in.',
+        'can promote themselves. "Admin" is now load-bearing: it is the only ' +
+        'thing gating the whole /ops panel, which can mark attendance, hide ' +
+        'comments and memories, and reveal a volunteer’s phone number. Grant ' +
+        'it deliberately. Changing it takes effect within seconds and without ' +
+        'the person signing out again, because the read is cached against ' +
+        'this document’s own tag rather than baked into their session cookie. ' +
+        'Accounts created before this field have no value at all, so every ' +
+        'reader tests for "admin" rather than for "not regular" — absent must ' +
+        'never be mistaken for a gap to fill in.',
       options: {
         list: [
           {title: 'Regular', value: 'regular'},

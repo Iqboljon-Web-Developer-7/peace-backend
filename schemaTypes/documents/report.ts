@@ -64,12 +64,27 @@ export const report = defineType({
       },
       validation: (rule) => rule.required(),
     }),
-    defineField({name: 'note', type: 'text', rows: 3, validation: (rule) => rule.max(500)}),
+    defineField({
+      name: 'note',
+      type: 'text',
+      rows: 3,
+      description:
+        'What the reporter typed. Optional, and empty on every report filed ' +
+        'before the app had a field for it — the reason list on its own could ' +
+        'not say what actually happened.',
+      validation: (rule) => rule.max(500),
+    }),
     defineField({
       name: 'reporter',
       type: 'reference',
       to: [{type: 'user'}],
-      validation: (rule) => rule.required(),
+      description:
+        'Absent means the report was filed anonymously, which the app offers ' +
+        'on purpose. This was `required()`, and it was wrong: `submitReport` ' +
+        'omits the field entirely for an anonymous report, API writes skip ' +
+        'validation so the write succeeded, and the row then showed a ' +
+        'validation error in the Studio forever. The moderation queue already ' +
+        'reads the absence correctly as "anonymous".',
     }),
     defineField({
       name: 'status',

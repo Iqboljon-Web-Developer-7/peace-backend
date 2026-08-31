@@ -52,12 +52,24 @@ export const bus = defineType({
       name: 'seatsTotal',
       title: 'Seats total',
       type: 'number',
+      description: 'Capacity of the vehicle. Shown on the announcement as "N seats".',
       validation: (rule) => rule.min(0),
     }),
     defineField({
       name: 'seatsLeft',
-      title: 'Seats left',
+      title: 'Seats left (retired)',
       type: 'number',
+      readOnly: true,
+      hidden: ({value}) => value === undefined,
+      description:
+        'No longer read by the app. Nothing ever decremented this — there is no ' +
+        'seat reservation anywhere, and joining a shift only creates an ' +
+        'attendance document — so whatever was typed here stayed put while the ' +
+        'announcement page rendered it as a live countdown, down to a "Full" ' +
+        'state. A volunteer could read "2 of 40 left" and find an empty bus. ' +
+        'Kept, read-only, so no existing value is destroyed, and hidden on ' +
+        'documents that never had one. Delete the field once the remaining ' +
+        'values have been cleared.',
       validation: (rule) => rule.min(0),
     }),
   ],

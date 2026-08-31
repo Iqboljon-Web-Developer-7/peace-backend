@@ -145,10 +145,19 @@ export const announcement = defineType({
     }),
     defineField({
       name: 'distanceLabel',
-      title: 'Distance (label)',
+      title: 'Distance (label) — retired',
       type: 'string',
       group: 'logistics',
-      description: 'e.g. "2.4 km". Display only.',
+      readOnly: true,
+      hidden: ({value}) => value === undefined,
+      description:
+        'No longer read by the app. It rendered as a "Distance" fact on the ' +
+        'announcement page and in the feed byline, but it is one string shown ' +
+        'to everyone — and Peace holds no location for a reader and no ' +
+        'geopoint for a shift, so "2.4 km" was 2.4 km from nothing. Someone in ' +
+        'the next district saw the same number. `address` and the map links ' +
+        'generated from it answer the same question truthfully. Kept read-only ' +
+        'so no value is destroyed; delete the field once these are cleared.',
     }),
     defineField({
       name: 'spotsTotal',
