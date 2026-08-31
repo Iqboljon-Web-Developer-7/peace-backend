@@ -178,6 +178,25 @@ export const user = defineType({
       readOnly: true,
     }),
     defineField({
+      name: 'role',
+      type: 'string',
+      group: 'account',
+      initialValue: 'regular',
+      description:
+        'Set in the Studio only — the profile page never writes it, so nobody ' +
+        'can promote themselves. Nothing reads it yet: this grants no access ' +
+        'and hides nothing. Accounts created before this field have no value ' +
+        'at all, so any reader must treat absent as "regular", not as a gap ' +
+        'to fill in.',
+      options: {
+        list: [
+          {title: 'Regular', value: 'regular'},
+          {title: 'Admin', value: 'admin'},
+        ],
+        layout: 'radio',
+      },
+    }),
+    defineField({
       name: 'status',
       type: 'string',
       group: 'account',

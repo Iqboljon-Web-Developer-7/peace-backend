@@ -31,7 +31,20 @@ export const report = defineType({
         {type: 'announcement'},
         {type: 'comment'},
         {type: 'memory'},
-        {type: 'attendance'},
+        /*
+         * No `attendance`. `submitReport` validates the target against
+         * ["announcement","comment","memory"], and the attendance panel
+         * deliberately files against the announcement id — so no report
+         * document with an attendance target exists or can be created, and
+         * leaving the type here is dead reference surface that the moderation
+         * queue would have to handle for no reason.
+         *
+         * `reason: 'attendance'` stays, and is right: the reason describes the
+         * complaint, the target describes the document. "This shift's
+         * attendance was a problem" is an announcement target with an
+         * attendance reason. Re-add this line if a specific person's row ever
+         * needs reporting.
+         */
       ],
       // Weak: a moderator must still be able to delete the offending document.
       weak: true,

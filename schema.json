@@ -482,36 +482,6 @@
     }
   },
   {
-    "type": "type",
-    "name": "attendance.reference",
-    "value": {
-      "type": "object",
-      "attributes": {
-        "_ref": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "string"
-          }
-        },
-        "_type": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "string",
-            "value": "reference"
-          }
-        },
-        "_weak": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "boolean"
-          },
-          "optional": true
-        }
-      },
-      "dereferencesTo": "attendance"
-    }
-  },
-  {
     "name": "report",
     "type": "document",
     "attributes": {
@@ -583,10 +553,6 @@
             {
               "type": "inline",
               "name": "memory.reference"
-            },
-            {
-              "type": "inline",
-              "name": "attendance.reference"
             }
           ]
         },
@@ -1130,6 +1096,46 @@
         "type": "objectAttribute",
         "value": {
           "type": "number"
+        },
+        "optional": true
+      },
+      "turnout": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "present"
+            },
+            {
+              "type": "string",
+              "value": "late"
+            },
+            {
+              "type": "string",
+              "value": "absent"
+            },
+            {
+              "type": "string",
+              "value": "excused"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "turnoutAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "turnoutBy": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "user.reference"
         },
         "optional": true
       },
@@ -2079,6 +2085,23 @@
         "type": "objectAttribute",
         "value": {
           "type": "string"
+        },
+        "optional": true
+      },
+      "role": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "regular"
+            },
+            {
+              "type": "string",
+              "value": "admin"
+            }
+          ]
         },
         "optional": true
       },
