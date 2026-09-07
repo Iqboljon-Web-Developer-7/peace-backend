@@ -224,6 +224,28 @@ export const announcement = defineType({
         ).min(1),
     }),
     defineField({
+      name: 'cancelled',
+      title: 'Cancelled',
+      type: 'boolean',
+      initialValue: false,
+      description:
+        'A shift that was called off. It stays in the dataset because ' +
+        'attendance holds a strong reference and deleting it would be refused ' +
+        'anyway — and because the people who signed up need to see what ' +
+        'happened rather than watch it vanish. Set from the ops panel. The ' +
+        'feed, the landing page and the reminder sweep all exclude it; the ' +
+        'detail page still renders, with a banner.',
+    }),
+    defineField({
+      name: 'cancelledReason',
+      title: 'Why it was cancelled',
+      type: 'string',
+      description:
+        'Shown to volunteers on the shift page. Optional — "Cancelled" alone ' +
+        'is honest, a wrong reason is not.',
+      hidden: ({parent}) => !parent?.cancelled,
+    }),
+    defineField({
       name: 'publishedAt',
       type: 'datetime',
       group: 'meta',
