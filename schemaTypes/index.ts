@@ -1,5 +1,6 @@
 import {announcement} from './documents/announcement'
 import {attendance} from './documents/attendance'
+import {broadcast} from './documents/broadcast'
 import {category} from './documents/category'
 import {comment} from './documents/comment'
 import {follow} from './documents/follow'
@@ -26,6 +27,9 @@ export const schemaTypes = [
   // System — written by the notification engine, never by hand
   notification,
   pushSubscription,
+  // Written by the ops panel, never by hand. See the note in broadcast.ts for
+  // why an operator's message is not an `announcement`.
+  broadcast,
   // Objects
   bus,
 ]

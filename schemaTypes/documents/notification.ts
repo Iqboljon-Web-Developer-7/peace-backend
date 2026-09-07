@@ -60,6 +60,17 @@ export const notification = defineType({
       weak: true,
     }),
     defineField({
+      name: 'broadcast',
+      type: 'reference',
+      to: [{type: 'broadcast'}],
+      description:
+        'Set instead of `announcement` when this came from the ops panel. ' +
+        'Exactly one of the two is present: a notification is either about a ' +
+        'published announcement or about a message an operator sent, never both.',
+      // Weak for the same reason as `announcement` directly above.
+      weak: true,
+    }),
+    defineField({
       name: 'title',
       type: 'string',
       description:
