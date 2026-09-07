@@ -2295,6 +2295,13 @@
         },
         "optional": true
       },
+      "suspendedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "closedAt": {
         "type": "objectAttribute",
         "value": {

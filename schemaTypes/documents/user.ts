@@ -215,6 +215,19 @@ export const user = defineType({
       },
     }),
     defineField({
+      name: 'suspendedAt',
+      title: 'Suspended at',
+      type: 'datetime',
+      readOnly: true,
+      description:
+        'Set when an operator suspends the account, cleared when they lift it. ' +
+        'This is what separates the two ways an account reaches status ' +
+        '"closed": a volunteer who closed their own account gets it reopened ' +
+        'automatically at their next sign-in, and a suspended one does not. ' +
+        'Written by the ops panel, never by hand — the login sync reads it, so ' +
+        'a value typed here would change who can sign in.',
+    }),
+    defineField({
       name: 'closedAt',
       type: 'datetime',
       group: 'account',
