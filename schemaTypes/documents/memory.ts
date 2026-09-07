@@ -51,6 +51,28 @@ export const memory = defineType({
       initialValue: 'visible',
       validation: (rule) => rule.required(),
     }),
+    defineField({
+      name: 'statusBy',
+      title: 'Status set by',
+      type: 'reference',
+      to: [{type: 'user'}],
+      readOnly: true,
+      // Weak, for the same reason `attendance.turnoutBy` is: an operations
+      // account must never become undeletable merely for having moderated
+      // something once.
+      weak: true,
+      description:
+        'The operator who last changed the status, written by the ops panel. ' +
+        'Sanity keeps the previous *value* in document history, but history ' +
+        'records the API token rather than a person — every panel write goes ' +
+        'through one token, so without this field there is no record of who.',
+    }),
+    defineField({
+      name: 'statusAt',
+      title: 'Status set at',
+      type: 'datetime',
+      readOnly: true,
+    }),
     defineField({name: 'createdAt', type: 'datetime'}),
   ],
   preview: {
